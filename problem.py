@@ -8,37 +8,35 @@ Generic problem to be subclassed for ACO instances
 class Problem(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def available_moves(self):
+    def components(self):
         """
-        Give the currently available moves. These may be any hashable objects.
+        Return a set of all possible decision variables
         Returns:
-            A set of moves.
+            A set of all solution components.
         """
         ...
 
     @abc.abstractmethod
-    def make_move(self, move):
+    def build(self):
         """
-        Make a move, possibly updating the result of available_moves()
+        Build up a solution. This is the bulk of the problem representation since it encodes any constraints.
+        Returns:
+            A generator which yields a list of (component, heuristic value) tuples, corresponding to valid solution compoenents.
+            Receives solution compoenents to add via send().
+        Raises:
+            StopIteration when no solution components are viable.
+        """
+        ...
+
+    @abc.abstractmethod
+    def score(self, sol):
+        """
+        Score the solution
         Args:
-            move: The move to make. This should be a move that was returned by available_moves.
-        """
-        ...
-
-    @abc.abstractmethod
-    def heuristic(self):
-        """
-        Returns:
-            A non-negative value representing the estimated value of the current
-            solution state.
-        """
-        ...
-
-    @abc.abstractmethod
-    def score(self):
-        """
-        Score the problem state. This should only be called when available_moves returns
-        an empty set.
+            sol: A list of variables that represent the solution.
         Returns:
             A non-negative score.
+        Raises:
+            ValueError if the solution is not valid.
         """
+        ...
